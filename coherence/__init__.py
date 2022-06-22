@@ -70,13 +70,28 @@ class CoherenceAnalysis():
     def _unitvec(self, v):
         return v/np.linalg.norm(v)
 
-    def analysis_text(self, text, max_order=10):
-        sentences = self.sentence_tokenizer(text.lower())
+    def text_analysis(self, text, max_order=10):
+        sentences = self.sentence_tokenizer(text)
         vectorized_sentences = [
-            [self.corpus.get_vector(w) 
-             for w in self.word_tokenizer(s) 
-                if self.corpus.get_vector(w) is not None] 
+            [
+                self.corpus.get_vector(w.lower()) 
+                for w in self.word_tokenizer(s) 
+            ] 
             for s in sentences
+        ]
+        non_vector_count = len([x 
+                                for s in vectorized_sentences
+                                for x in s
+                                    if x is None
+                               ])
+        total_word_count = len([x 
+                                for s in vectorized_sentences
+                                for x in s
+                               ])
+        sentence_count = len(sentences)
+        vectorized_sentences = [
+            [v for v in s if v is not None]
+            for s in vectorized_sentences
         ]
         mean_and_len = [(np.mean(vec_sent, 0), len(vec_sent))
                         for vec_sent in vectorized_sentences]
@@ -86,7 +101,6 @@ class CoherenceAnalysis():
         except:
             return {}
         
-        breakpoint()
         m = np.array(list(map(self._unitvec, mean_vectors_series)))
         max_order = min(m.shape[0], max_order)
         similarity_matrix = np.dot(m, m.T)
@@ -116,6 +130,10 @@ class CoherenceAnalysis():
             'vector_serie_'+str(i): s 
             for i, s in enumerate(similarity_orders)
         })
+
+        similarity_metrics['non_vector_count'] = non_vector_count
+        similarity_metrics['word_count'] = total_word_count
+        similarity_metrics['sentence_count'] = sentence_count
 
         return similarity_metrics
 
