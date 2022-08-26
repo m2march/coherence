@@ -12,11 +12,15 @@ import scipy
 import os
 import importlib.resources
 
+MODELS_PATHS = {
+    'tasa_150': 'models/tasa_150',
+    'tasa_300': 'models/tasa_300',
+}
 
 class LsaWrapper():
     def __init__(self, corpus='en_tasa'):
         package_path = importlib.resources.files(__name__)
-        path = {"en_tasa": "models/tasa_150"}
+        path = MODELS_PATHS
         path_models = path[corpus]
         dictionary_package_path = os.path.join(path_models, 'dictionary.json')
         dictionary_path = os.path.join(package_path, dictionary_package_path)
