@@ -13,8 +13,8 @@ import os
 import importlib.resources
 
 MODELS_PATHS = {
-    'tasa_150': 'models/tasa_150',
-    'tasa_300': 'models/tasa_300',
+    '150': 'models/tasa_150',
+    '300': 'models/tasa_300',
 }
 
 class LsaWrapper():
